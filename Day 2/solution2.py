@@ -24,5 +24,5 @@ for line in input:
     a = x if x > y else y
     b = x if x < y else y
     total += a / b
-    
+
 print total
