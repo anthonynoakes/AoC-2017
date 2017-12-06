@@ -5,13 +5,11 @@ xmlhttp.send();
 var content = xmlhttp.responseText;
 var lines = content.split("\n");
 
-var blocks = lines[0].split("\t").map(Number);//conver line to number
-
-var hashtable = {};
-var cycles = 0;
+var gblocks = lines[0].split("\t").map(Number);//conver line to number
+//var blocks = "2	4	1	2".split("\t").map(Number);//conver line to number
 
 // Returns count of existing hash
-function checkExistsBankAndUpdate(bank)
+function checkExistsBankAndUpdate(bank, hashtable)
 {
 	// blocks to value
 	blocksStr = bank.join(';');
@@ -25,30 +23,39 @@ function checkExistsBankAndUpdate(bank)
 	return count;
 }
 
-while (checkExistsBankAndUpdate(blocks) <= 1)
+function getCyclesForLoops(loops, blocks)
 {
-	// get largest block index
-	var largestIndex = 0; var blockVal = 0;
-	for(var i = 0; i < blocks.length; i++)
+	var hashtable = {};
+	var cycles = 0;
+
+	while (checkExistsBankAndUpdate(blocks, hashtable) >= loops)
 	{
-		if(blocks[i] > blockVal)
+		// get largest block index
+		var largestIndex = 0; var blockVal = 0;
+		for(var i = 0; i < blocks.length; i++)
 		{
-			largestIndex = i;
-			blockVal = blocks[i]
+			if(blocks[i] > blockVal)
+			{
+				largestIndex = i;
+				blockVal = blocks[i]
+			}
 		}
-	}
 
-	blocks[largestIndex] = 0;// reset largest
+		blocks[largestIndex] = 0;// reset largest
+		
+		var index = largestIndex + 1; // get starting index of adding blocks
+		for(var i = blockVal; i > 0; i--) // iterate and add to blocks 
+		{
+			blocks[index % blocks.length]++;
+			index++
+		}
+
+		// add completed cycle
+		cycles++;
+	}
 	
-	var index = largestIndex + 1; // get starting index of adding blocks
-	for(var i = blockVal; i > 0; i--) // iterate and add to blocks 
-	{
-		blocks[index % blocks.length]++;
-		index++
-	}
-
-	// add completed cycle
-	cycles++;
+	return cycles;
 }
 
-console.log("cycles: " + cycles);
+console.log("problem 1 cycles: " + getCyclesForLoops(1, gblocks.slice()));
+console.log("problem 2 cycles: " + (getCyclesForLoops(2, gblocks.slice()) - getCyclesForLoops(1, gblocks.slice())));
