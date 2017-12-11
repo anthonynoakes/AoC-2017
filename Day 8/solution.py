@@ -1,7 +1,3 @@
-#For each row
-# determine the difference between the largest value and the smallest value
-# the checksum is the sum of all of these differences.
-
 import re
 import sys
 
@@ -20,7 +16,6 @@ def checkCondition(x, cond, value):
 def processLine (segs, dict):
     # smi   inc 781   if epx >    -2
     # index op  shift    x   cond value
-    # get value
 
     if len(segs) < 7:
         return
@@ -38,20 +33,26 @@ def processLine (segs, dict):
         else :
             dict[index] = dict.get(index, 0) - shift
 
-    # if()
-
     return 0;
 
 dict = {}
 
 input = open('Day 8\input.txt', 'r').readlines()
-total = 0;
+maxEver = 0;
 
 for line in input:
     # split lines, and remove trailing newline charactor 
     segs = re.split(r' ', line.translate(None, "\n"));
     processLine(segs, dict);
     
+    m = max(dict, key=dict.get)
+    if(maxEver < dict[m]):
+        maxEver = dict[m]
+        
+    
 key = max(dict, key=dict.get)
+print "Part 1"
 print (key, dict[key])
 
+print "Part 2"
+print maxEver
